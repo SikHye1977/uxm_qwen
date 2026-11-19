@@ -1,22 +1,25 @@
 "use client";
 
-import {useState} from "react";
 import {useChat} from "../hooks/useChat";
-import {send} from "process";
+import MarkdownAnswer from "@/components/chat/MarkdownAnswer";
 
 export default function Chat() {
   const {input, setInput, answer, loading, sendMessage} = useChat();
 
   return (
-    <main className="mx-auto max-w-xl p-6">
+    <main className="mx-auto max-w-10xl p-6">
       <h1 className="mb-4 text-xl font-bold">Qwen Chat</h1>
       <div
-        role="status"
-        className="mb-4 min-h-64 whitespace-pre-wrap rounded border p-4"
+        aria-busy={loading}
+        className="mb-4 min-h-64 rounded-xl border border-zinc-200 p-5 dark:border-zinc-800"
       >
-        {loading
-          ? "Qwen이 답변을 생성하고 있습니다..."
-          : answer || "답변이 여기에 표시됩니다."}
+        {loading ? (
+          <p role="status">Qwen이 답변을 생성하고 있습니다...</p>
+        ) : answer ? (
+          <MarkdownAnswer content={answer} />
+        ) : (
+          <p className="text-zinc-500">답변이 여기에 표시됩니다.</p>
+        )}
       </div>
       <form
         className="flex gap-2"
