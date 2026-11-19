@@ -3,20 +3,44 @@ import {useState} from "react";
 export function useChat() {
   const [input, setInput] = useState("");
   const [answer, setAnswer] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  function sendMessage() {
+  async function sendMessage() {
     const question = input.trim();
     if (!question) return;
 
-    //
-    setAnswer(`temporary answer`);
-    setInput("");
+    setLoading(true);
+    setAnswer("");
+
+    try {
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({message: question}),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "failed to request");
+      }
+
+      setAnswer(data.answer);
+      setInput("");
+    } catch (error) {
+      setAnswer(
+        error instanceof Error ? error.message : "get error while request",
+      );
+    } finally {
+      setLoading(false);
+    }
   }
 
   return {
     input,
     setInput,
     answer,
+    loading,
     sendMessage,
   };
 }

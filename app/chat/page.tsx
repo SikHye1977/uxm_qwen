@@ -5,7 +5,7 @@ import {useChat} from "../hooks/useChat";
 import {send} from "process";
 
 export default function Chat() {
-  const {input, setInput, answer, sendMessage} = useChat();
+  const {input, setInput, answer, loading, sendMessage} = useChat();
 
   return (
     <main className="mx-auto max-w-xl p-6">
@@ -14,7 +14,9 @@ export default function Chat() {
         role="status"
         className="mb-4 min-h-64 whitespace-pre-wrap rounded border p-4"
       >
-        {answer || "답변이 여기에 표시됩니다."}
+        {loading
+          ? "Qwen이 답변을 생성하고 있습니다..."
+          : answer || "답변이 여기에 표시됩니다."}
       </div>
       <form
         className="flex gap-2"
@@ -32,10 +34,10 @@ export default function Chat() {
         />
         <button
           type="submit"
-          disabled={!input.trim()}
+          disabled={loading || !input.trim()}
           className="rounded bg-blue-600 px-4 py-2 text-white disabled:opacity-50"
         >
-          전송
+          {loading ? "응답 대기 중" : "전송"}
         </button>
       </form>
     </main>
