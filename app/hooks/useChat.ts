@@ -19,6 +19,11 @@ export function useChat() {
         body: JSON.stringify({message: question}),
       });
 
+      if (response.status === 401) {
+        window.location.replace("/login");
+        return;
+      }
+
       const data = await response.json();
 
       if (!response.ok) {
