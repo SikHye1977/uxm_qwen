@@ -1,12 +1,22 @@
 import "server-only";
 
-export async function askQwen(question: string): Promise<string> {
+export type OllamaMessage = {
+  role: "user" | "assistant";
+  content: string;
+};
+
+export async function askQwen(
+  input: string | OllamaMessage[],
+): Promise<string> {
   const baseUrl = process.env.OLLAMA_BASE_URL;
   const model = process.env.OLLAMA_MODEL;
 
   if (!baseUrl || !model) {
-    throw new Error("There's no env setting!");
+    throw new Error("Ollama 환경변수가 없습니다.");
   }
+
+  const messages: OllamaMessage[] =
+    typeof input === "string" ? [{role: "user", content: input}] : input;
 
   const response = await fetch(new URL("/api/chat", baseUrl), {
     method: "POST",
@@ -15,7 +25,7 @@ export async function askQwen(question: string): Promise<string> {
     },
     body: JSON.stringify({
       model,
-      messages: [{role: "user", content: question}],
+      messages,
       stream: false,
     }),
     signal: AbortSignal.timeout(180_000),
